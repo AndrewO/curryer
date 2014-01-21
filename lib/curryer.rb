@@ -57,36 +57,32 @@ module Curryer
       reset_cache!
     end
 
-    def __get_obj__
+    def __getobj__
       @target
     end
 
-    def __set_obj__(new_target)
+    def __setobj__(new_target)
       reset_cache!
       @target = new_target
     end
 
     # See STLIB's delegate.rb. This is mostly just an adaption of what the
     # base Delegate#method_missing is doing.
-    def method_missing(m, *local_args, &b)
-      target = self.__get_obj__
+    def method_missing(m, *local_args, &blk)
+      target = self.__getobj__
 
       # Get the method, and put a partially-evaluated version of it in the cache
       # so that we don't have to re-curry future calls. Then call it with the
       # local args.
       if target.respond_to?(m)
-        result = @cache[m] ||= target.method(m).to_proc.curry[*@args]
-        if local_args.empty?
-          result
-        else
-          if result.respond_to?(:call)
-            result.call(*local_args)
-          else
-            raise ArgumentError, \
-              "Curried result #{result.inspect} is not callable but arguments #{local_args} were still given. " +
-              "You're trying to call the method with more arguments than it takes."
-          end
-        end
+        # Only once, make a closure for the method that applies the saved args
+        # to the method.
+        #
+        # Originally used Proc#curry, but doesn't work with certain
+        # metaprogramming styles that don't allow you to grab the metaprogrammed
+        # method.
+        result = @cache[m] ||= ->(*las, &b) { target.send(m, *(@args + las), &b) }
+        result.call(*local_args, &blk)
       else
         super(m, *local_args, &b)
       end
