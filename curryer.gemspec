@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Curryer::VERSION
   spec.authors       = ["Andrew O'Brien"]
   spec.email         = ["obrien.andrew@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Currying + Delegation = Curryer}
+  spec.summary       = %q{Allows you to easily wrap a target object with common arguments.}
+  spec.homepage      = "https://github.com/AndrewO/curryer"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
